@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:yummie/widgets/page_indicator.dart'; // Doğru yolu sağladığınızdan emin olun
+import 'package:yummie/screens/home_page.dart';
+import 'package:yummie/widgets/page_indicator.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -8,7 +9,24 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController(initialPage: 0);
-  int _currentPage = 0; // Sayfa durumunu tutacak değişken
+  int _currentPage = 0;
+
+  void nextPage() {
+    if (_currentPage < 2) {
+      // Toplam sayfa sayısından bir eksik
+      _pageController.nextPage(
+          duration: Duration(milliseconds: 400), curve: Curves.easeInOut);
+    }
+  }
+
+  void continueToNextScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HomePage(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,31 +38,51 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               controller: _pageController,
               onPageChanged: (int page) {
                 setState(() {
-                  _currentPage = page; // Sayfa değiştiğinde durumu güncelle
+                  _currentPage = page;
                 });
               },
               children: <Widget>[
                 OnboardingPage(
-                  image: 'assets/slide1.png', // Hamburger image
+                  image: 'assets/slide1.png',
+                  width: 300,
+                  height: 300,
                   title: 'Delicious Dishes',
-                  description: 'Experience a variety of amazing dishes from different cultures around the world.',
+                  description:
+                      'Experience a variety of amazing dishes from different cultures around the world.',
                 ),
                 OnboardingPage(
-                  image: 'assets/slide2.png', // Chef image
+                  image: 'assets/slide2.png',
+                  width: 250,
+                  height: 300,
                   title: 'World-Class Chefs',
                   description: 'Our dishes are prepared by only the best.',
                 ),
                 OnboardingPage(
-                  image: 'assets/slide3.png', // Table setting image
+                  image: 'assets/slide3.png',
+                  width: 300,
+                  height: 300,
                   title: 'Fine Dining',
-                  description: 'Enjoy fine dining experience with our exclusive services.',
+                  description:
+                      'Enjoy fine dining experience with our exclusive services.',
                 ),
               ],
             ),
           ),
-          PageIndicator(currentValue: _currentPage), // PageIndicator'a geçerli sayfa bilgisini gönder
+          PageIndicator(currentValue: _currentPage),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed:
+                      _currentPage == 2 ? continueToNextScreen : nextPage,
+                  child: Text(_currentPage == 2 ? 'Continue' : 'Next'),
+                ),
+              ],
+            ),
+          ),
           SizedBox(height: 20),
-          // NextButton() ve diğer elemanlar burada olabilir
         ],
       ),
     );
@@ -53,13 +91,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 class OnboardingPage extends StatelessWidget {
   final String image;
+  final double width;
+  final double height;
   final String title;
   final String description;
 
-  OnboardingPage({
-    required this.image,
-    required this.title, 
-    required this.description});
+  OnboardingPage(
+      {required this.image,
+      required this.width,
+      required this.height,
+      required this.title,
+      required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +110,7 @@ class OnboardingPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Spacer(),
-        Image.asset(image, height: 300),
+        Image.asset(image, width: width, height: height),
         Text(
           title,
           style: TextStyle(
